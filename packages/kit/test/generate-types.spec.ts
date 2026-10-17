@@ -256,6 +256,16 @@ describe('tsConfig generation', () => {
     }
   })
 
+  it('should keep nuxt.d.ts first in the app tsconfig include', async () => {
+    const { tsConfig, legacyTsConfig } = await _generateTypes(mockNuxtWithOptions({
+      typescript: { appTsConfig: { include: ['../test/**/*.ts', './nuxt.d.ts'] } },
+    }))
+    expect(tsConfig.include?.[0]).toBe('./nuxt.d.ts')
+    expect(tsConfig.include).toContain('../test/**/*.ts')
+    expect(tsConfig.include?.filter(path => path === './nuxt.d.ts')).toHaveLength(1)
+    expect(legacyTsConfig.include?.[0]).toBe('./nuxt.d.ts')
+  })
+
   it('should propagate appTsConfig excludes to legacy tsconfig', async () => {
     const { legacyTsConfig } = await _generateTypes(mockNuxtWithOptions({
       typescript: { appTsConfig: { exclude: ['my-app-exclude'] } },
